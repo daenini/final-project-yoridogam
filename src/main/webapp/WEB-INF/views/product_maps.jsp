@@ -18,6 +18,7 @@
                     </div>
                 </div>
 
+
                 <div class="row">
                     <div class="col-12 col-lg-7">
                         <div class="single_product_thumb">
