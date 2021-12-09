@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.InquiryMapper">
+	<resultMap id="inquiryResultMap" type="com.itwill.yoridogam.inquiry.Inquiry" >
+		<result column="IB_NO" property="ib_no"/>
+		<result column="IB_TITLE" property="ib_title"/>
+		<result column="IB_CONTENT" property="ib_content"/>
+		<result column="IB_DATE" property="ib_date"/>
+		<result column="IB_VIEWCOUNT" property="ib_viewCount"/>
+		<result column="IB_DEPTH" property="ib_depth"/>
+		<result column="IB_GROUPNO" property="ib_groupNo"/>
+		<result column="IB_STEP" property="ib_step"/>
+		<association property="member" javaType="com.itwill.yoridogam.member.Member" autoMapping="true">
+			<result column="M_ID" property="m_id"/>
+		</association>
+	</resultMap>
+	
+	<insert id="insertInquiry" parameterType="com.itwill.yoridogam.inquiry.Inquiry">
+		<selectKey keyProperty="ib_no" resultType="java.lang.Integer" order="BEFORE">
+			SELECT inquiry_ib_no_SEQ.nextval FROM DUAL
+		</selectKey>
+		insert into inquiry	values(#{ib_no}, 
+									#{ib_title},
+									#{ib_content},
+									sysdate,
+									0,
+									0,
+									#{ib_no},
+									0,
+									#{member.m_id})
+		
+	</insert>
+	
+	<update id="updateInquiry"  parameterType="com.itwill.yoridogam.inquiry.Inquiry">
+		update inquiry set IB_TITLE=#{ib_title}, IB_CONTENT=#{ib_content} 
+			where IB_NO=#{ib_no}
+		<selectKey keyProperty="ib_no" resultType="java.lang.Integer" order="AFTER">
+			SELECT #{ib_no} FROM DUAL
+		</selectKey>
+	</update>
+	
+	<insert id="insertInquiryA" parameterType="com.itwill.yoridogam.inquiry.Inquiry">
+		insert into inquiry VALUES(inquiry_ib_no_SEQ.nextval,
+									#{ib_title},
+									#{ib_content},
+									sysdate,
+									0,
+									#{ib_depth}+1,
+									#{ib_no},
+									#{ib_step}+1,
+									#{member.m_id})
+		<selectKey keyProperty="ib_no" resultType="java.lang.Integer" order="AFTER">
+			SELECT inquiry_ib_no_SEQ.CURRVAL FROM DUAL
+		</selectKey>
+		
+	</insert>
+	
+	<update id="updateInquiryA"  parameterType="com.itwill.yoridogam.inquiry.Inquiry">
+		update inquiry set IB_TITLE=#{ib_title}, IB_CONTENT=#{ib_content} 
+			where IB_NO=#{ib_no}
+		<selectKey keyProperty="ib_no" resultType="java.lang.Integer" order="AFTER">
+			SELECT #{ib_no} FROM DUAL
+		</selectKey>
+	</update>
+	
+	<delete id="deleteInquiry" parameterType="java.lang.Integer">
+		DELETE FROM inquiry WHERE IB_NO=#{ib_no}
+	</delete>
+	
+	<select id="inquiryList" resultMap="inquiryResultMap">
+		select * from (select rownum idx, s.* from
+                                    (select IB_NO, 
+                                            IB_TITLE, 
+                                            IB_CONTENT, 
+                                            IB_DATE, 
+                                            IB_VIEWCOUNT, 
+                                            IB_DEPTH, 
+                                            IB_GROUPNO, 
+                                            IB_STEP, 
+                                            M_ID
+                                    from inquiry  
+                                    order by IB_GROUPNO desc, IB_DEPTH asc) s )
+	</select>
+	
+	<select id="selectByNoInquiry" parameterType="java.lang.Integer" resultMap="inquiryResultMap">
+		select * from inquiry where IB_NO=#{ib_no}
+	</select>
+		
+	<update id="updateInquiryViewCount" parameterType="java.lang.Integer">
+		update inquiry set IB_VIEWCOUNT = IB_VIEWCOUNT+1 where IB_NO=#{ib_no}
+	</update>
+	
+	<select id="getListWithPaging" resultMap="inquiryResultMap">
+	
+		select * from (select  ROWNUM AS RN, s.* from
+		                                    (select IB_NO, 
+		                                            IB_TITLE, 
+		                                            IB_CONTENT, 
+		                                            IB_DATE, 
+		                                            IB_VIEWCOUNT, 
+		                                            IB_DEPTH, 
+		                                            IB_GROUPNO, 
+		                                            IB_STEP, 
+		                                            M_ID
+		                                    from inquiry  
+		                                    order by IB_GROUPNO desc, IB_DEPTH asc) s )
+		WHERE RN between #{start} and #{end}
+	</select>
+	
+	<select id="getTotal" resultType="int">
+		SELECT count(*) from inquiry
+	</select>
+	
+	
+</mapper>

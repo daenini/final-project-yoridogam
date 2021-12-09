@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.NoticeMapper">
+	<resultMap id="NoticeResultMap" type="com.itwill.yoridogam.notice.Notice" >
+		<result column="NOTI_NO" property="noti_no"/>
+		<result column="NOTI_TITLE" property="noti_title"/>
+		<result column="NOTI_DATE" property="noti_date"/>
+		<result column="NOTI_VIEWCOUNT" property="noti_viewCount"/>
+		<result column="NOTI_CONTENT" property="noti_content"/>
+		<association property="member" javaType="com.itwill.yoridogam.member.Member" autoMapping="true">
+			<result column="M_ID" property="m_id"/>
+		</association>
+	</resultMap>
+	
+	<insert id="insertNoti" parameterType="com.itwill.yoridogam.notice.Notice">
+		insert INTO NOTICE(NOTI_NO, NOTI_TITLE, NOTI_DATE, NOTI_VIEWCOUNT, NOTI_CONTENT, M_ID)
+			 VALUES(notice_noti_no_SEQ.nextval, #{noti_title}, sysdate, 0, #{noti_content}, #{member.m_id})
+	<selectKey keyProperty="noti_no" resultType="java.lang.Integer" order="AFTER">
+		SELECT notice_noti_no_SEQ.CURRVAL FROM DUAL
+	</selectKey>
+	</insert>
+	
+	<update id="updateNoti" parameterType="com.itwill.yoridogam.notice.Notice">
+		update NOTICE set NOTI_TITLE =#{noti_title}, NOTI_CONTENT=#{noti_content} 
+			where NOTI_NO=#{noti_no}
+	<selectKey keyProperty="noti_no" resultType="java.lang.Integer" order="AFTER">
+		SELECT #{noti_no} FROM DUAL
+	</selectKey>
+	</update>
+	
+	<delete id="deleteNoti" parameterType="java.lang.Integer">
+		DELETE FROM NOTICE WHERE NOTI_NO=#{noti_no}
+	</delete>
+	
+	<select id="notiList" resultMap="NoticeResultMap">
+		select * from (select rownum idx, s.* from
+                                    (select NOTI_NO, 
+                                            NOTI_TITLE, 
+                                            NOTI_DATE, 
+                                            NOTI_VIEWCOUNT, 
+                                            NOTI_CONTENT, 
+                                            M_ID 
+                                    from notice  
+                                    order by NOTI_NO desc) s )
+	</select>
+	
+	<select id="selectByNotiNo" parameterType="Integer" resultMap="NoticeResultMap">
+		select * from NOTICE where NOTI_NO=#{noti_no}
+	</select>
+
+	<update id="updateNotiViewCount" parameterType="java.lang.Integer">
+		update NOTICE set NOTI_VIEWCOUNT = NOTI_VIEWCOUNT+1 where NOTI_NO=#{noti_no}
+	</update>
+	
+	<select id="getListWithPaging" resultMap="NoticeResultMap">
+		SELECT * FROM 
+		            (SELECT
+		                ROWNUM AS RN,
+		                NOTICE.*
+		           	FROM NOTICE
+		            ORDER BY NOTI_NO DESC)
+		WHERE RN between #{start} and #{end}
+	</select>
+	
+	<select id="getTotal" resultType="int">
+		SELECT count(*) from notice
+	</select>
+		
+
+</mapper>

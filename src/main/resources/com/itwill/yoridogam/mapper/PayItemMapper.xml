@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.PayItemMapper">
+	<resultMap type="com.itwill.yoridogam.pay.payItem.Pay_item" id="payItemResultMap" autoMapping="true">
+		<result column="PI_NO" property="pi_no"/>
+		<result column="PI_Qty" property="pi_qty"/>
+		<result column="PAY_NO" property="pay_no"/>
+		<association property="product" javaType="com.itwill.yoridogam.product.Product" autoMapping="true">
+			<result column="P_NO" property="p_no"/>
+			<result column="P_NAME" property="p_name"/>
+			<result column="P_DETAIL" property="p_detail"/>
+			<result column="P_CATEGORY" property="p_category"/>
+			<result column="P_PRICE" property="p_price"/>
+			<result column="P_TYPE" property="p_type"/>
+			<result column="P_PHOTO" property="p_photo"/>
+			<association property="teacher" javaType="com.itwill.yoridogam.teacher.Teacher" autoMapping="true">
+				<result column="T_ID" property="t_id"/>
+				<result column="T_NAME" property="t_name"/>
+			</association>
+		</association>
+	</resultMap>
+	<insert id="createPayItem" parameterType="com.itwill.yoridogam.pay.payItem.Pay_item">
+		insert into pay_item(pi_no, pi_qty, pay_no, p_no) values(PAY_ITEM_PI_NO_SEQ.nextval,#{pi_qty},#{pay_no},#{product.p_no})
+	</insert>
+	
+	<select id="findPayItemDetail" parameterType="Integer" resultMap="payItemResultMap">
+		select * from pay_item pi join product p on pi.p_no=p.p_no join teacher t on t.t_id=p.t_id where pi.pi_no=#{pi_no}
+	</select>	
+	
+
+
+
+
+
+
+
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.ProductMapper">
+	<resultMap type="com.itwill.yoridogam.product.Product" id="ProductResultMap">
+		<result column="P_NO" property="p_no"/>
+		<result column="P_NAME" property="p_name"/>
+		<result column="P_DETAIL" property="p_detail"/>
+		<result column="P_CATEGORY" property="p_category"/>
+		<result column="P_PRICE" property="p_price"/>
+		<result column="P_TYPE" property="p_type"/>
+		<result column="P_PHOTO" property="p_photo"/>
+		<association property="teacher" javaType="com.itwill.yoridogam.teacher.Teacher" autoMapping="true">
+				<result column="T_ID" property="t_id"/>
+				<result column="T_NAME" property="t_name"/>
+				<result column="T_LOCATION" property="t_location"/>
+				<result column="T_DETAIL" property="t_detail"/>
+		</association>
+	</resultMap>
+	
+	<resultMap type="com.itwill.yoridogam.teacher.Teacher" id="TeacherResltMap">
+		<result column="T_ID" property="t_id"/>
+		<result column="T_NAME" property="t_name"/>
+		<result column="T_PASS" property="t_pass"/>
+		<result column="T_PHONE" property="t_phone"/>
+		<result column="T_EMAIL" property="t_email"/>
+		<result column="T_PHOTO" property="t_photo"/>
+		<result column="T_DETAIL" property="t_detail"/>
+		<result column="T_LOCATION" property="t_location"/>
+	</resultMap>
+
+	<!-- 상품추가 -->
+	<insert id="create" parameterType="com.itwill.yoridogam.product.Product">
+		insert into product(p_no,p_name,p_detail,p_category,p_price,p_type,p_photo,t_id)
+			values(product_p_no_seq.nextval,#{p_name},#{p_detail},#{p_category},#{p_price},#{p_type},#{p_photo},#{teacher.t_id})
+	<selectKey keyProperty="p_no" resultType="Integer" order="AFTER">
+		SELECT PRODUCT_P_NO_SEQ.CURRVAL FROM DUAL
+	</selectKey>
+	</insert>
+	
+	<update id="updateByNo" parameterType="com.itwill.yoridogam.product.Product">
+		update product 
+		set p_name=#{p_name},p_detail=#{p_detail},p_category=#{p_category},p_price=#{p_price},p_type=#{p_type}, p_photo=#{p_photo} where p_no=#{p_no}
+	</update>
+	<delete id="deleteByNo" parameterType="java.lang.Integer">
+		delete product where p_no=#{p_no}
+	</delete>
+	<select id="selectByNo" parameterType="java.lang.Integer" resultMap="ProductResultMap">
+		select * from product where p_no=#{p_no}
+	</select>
+	<select id="selectAll" parameterType="java.lang.String" resultMap="ProductResultMap">
+		select * from product
+	</select>
+	
+	
+	<!-- 상품 강사 정보 얻기 -->
+	<select id="selectTByP_no" parameterType="java.lang.Integer" resultMap="TeacherResltMap">
+		select * from teacher t join product p on p.t_Id = t.t_id where p_no=#{p_no}
+	</select>
+	
+	<!-- 강사 아이디 받아서 상품 정보 얻기 -->
+	<select id="selectpByT_id" parameterType="java.lang.String" resultMap="ProductResultMap">
+		select * from product p join teacher t on p.t_id = t.t_id where p.t_id =#{t_id}
+	</select>
+	
+	<!-- 상품 강사 전체 -->
+	<select id="selectPTAll" parameterType="java.lang.Integer" resultMap="ProductResultMap">
+		select * from product p join teacher t on p.t_Id = t.t_id
+	</select>
+	
+</mapper>

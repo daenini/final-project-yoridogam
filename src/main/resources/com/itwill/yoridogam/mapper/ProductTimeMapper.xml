@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.ProductTimeMapper">
+
+<resultMap type="com.itwill.yoridogam.productTime.ProductTime" id="PTResultMap">
+	<result column="PT_NO" property="pt_no"/>
+	<result column="PT_DATE" property="pt_date"/>
+	<result column="PT_MAX" property="pt_max"/>
+	<result column="PT_RSV" property="pt_rsv"/>
+	<result column="PT_TIME" property="pt_time"/>
+	<association property="product" javaType="com.itwill.yoridogam.product.Product">
+		<result column="P_NO" property="p_no"/>
+	</association>
+</resultMap>
+
+
+<!-- (강사) 오프라인 강의시간 등록 -->
+<insert id="create" parameterType="com.itwill.yoridogam.productTime.ProductTime">
+	insert into product_time(pt_no,pt_date, pt_max, pt_rsv,pt_time, p_no) 
+		values(PRODUCT_TIME_PT_NO_SEQ.nextval,#{pt_date},#{pt_max},0,#{pt_time},#{product.p_no})
+</insert>
+
+
+ <!-- 강의 시간 조회 -->
+ <select id="selectAll" parameterType="java.lang.Integer" resultMap="PTResultMap">
+  select * from product_time where p_no=#{product.p_no}
+ </select>
+ 
+ <!-- 강의 pt_rsv 조회  -->
+ <select id="selectPtNo" parameterType="java.lang.Integer" resultMap="PTResultMap">
+ 	select * from product_time where pt_no=#{pt_no}
+ </select>
+
+ <!-- 강의 date이용해서 시간 구하기  -->
+ <select id="selectPtTime" parameterType="com.itwill.yoridogam.productTime.ProductTime" resultMap="PTResultMap">
+ 	select * from product_time where p_no=#{product.p_no} and pt_date=#{pt_date}
+ </select>
+ 
+ <select id="selectPtNo2" parameterType="com.itwill.yoridogam.productTime.ProductTime" resultMap="PTResultMap">
+ 	 select * from product_time  where pt_date= #{pt_date} and pt_time= #{pt_time} and p_no= #{product.p_no}
+ </select>
+<!-- 특정 강의시간 수정 -->
+<update id="update" parameterType="com.itwill.yoridogam.productTime.ProductTime">
+	update product_time set pt_time=#{pt_time} where pt_no=#{pt_no} and p_no=#{product.p_no}
+</update>
+
+
+
+<!-- 강의 예약한 인원 추가 -->
+<update id="updatePt_rsv" parameterType="com.itwill.yoridogam.productTime.ProductTime">
+ update product_time set pt_rsv=#{pt_rsv} where pt_no=#{pt_no}
+</update>
+
+
+<!-- 특정 강의시간 삭제 -->
+<delete id="delete" parameterType="java.lang.Integer">
+ 	delete from product_time where pt_no=#{pt_no}
+</delete>
+
+</mapper>
+
+
+<!-- 
+ 예약가능한 강의 시간 리스트 조회 
+<select id="selectPi" parameterType="java.lang.Integer" resultMap="PTResultMap">
+	select * from product_time pt join reservation rsv on pt.pt_time!=rsv.rsv_time where pt.p_no=#{product.p_no}
+</select>
+
+ 예약된 강의 시간 리스트 조회 
+<select id="selectRv" parameterType="java.lang.Integer" resultMap="PTResultMap">
+	select * from product_time pt join reservation rsv on pt.pt_time=rsv.rsv_time where pt.p_no=#{product.p_no}
+</select>
+ -->

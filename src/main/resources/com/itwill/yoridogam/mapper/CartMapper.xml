@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.CartMapper">
+	<resultMap id="cartResultMap" type="com.itwill.yoridogam.pay.cart.Cart">
+		<result column="CI_NO" property="ci_no"/>
+		<result column="CI_QTY" property="ci_qty"/>
+		<association property="member" javaType="com.itwill.yoridogam.member.Member" autoMapping="true">
+			<result column="M_ID" property="m_id"/>
+			<result column="M_NAME" property="m_name"/>
+			<result column="M_ADDR" property="m_addr"/>
+			<result column="M_EMAIL" property="m_email"/>
+			<result column="M_PHONE" property="m_phone"/>
+			<result column="M_GENDER" property="m_gender"/>
+		</association>
+		<association property="product" javaType="com.itwill.yoridogam.product.Product" autoMapping="true">
+			<result column="P_NO" property="p_no"/>
+			<result column="P_NAME" property="p_name"/>
+			<result column="P_DETAIL" property="p_detail"/>
+			<result column="P_CATEGORY" property="p_category"/>
+			<result column="P_PRICE" property="p_price"/>
+			<result column="P_TYPE" property="p_type"/>
+			<result column="P_PHOTO" property="p_photo"/>
+		</association>
+	</resultMap>
+	
+	<insert id="insertCart" parameterType="com.itwill.yoridogam.pay.cart.Cart">
+		insert into cart(ci_no, ci_qty, p_no, m_id) values(CART_CI_NO_SEQ.nextval,#{ci_qty},#{product.p_no},#{member.m_id})
+	</insert>
+	
+	<update id="increaseQty" parameterType="com.itwill.yoridogam.pay.cart.Cart">
+		update cart set ci_qty=ci_qty+1 where ci_no=#{ci_no}
+	</update>
+
+	<update id="decreaseQty" parameterType="Integer">
+		update cart set ci_qty=ci_qty-1 where ci_no=#{ci_no}
+	</update>
+
+	<delete id="deleteCartByNo" parameterType="Integer">
+		delete from cart where ci_no=#{ci_no}
+	</delete>
+	
+	<delete id="deleteCart" parameterType="String">
+		delete from cart where m_id=#{m_id}
+	</delete>
+	
+	<select id="cartList" parameterType="String" resultMap="cartResultMap">
+		select * from cart c join product p on c.p_no=p.p_no where m_id=#{m_id}
+	</select>
+	
+	<select id="isExistCart" parameterType="String" resultType="Integer">
+		select count(*) from cart c join member m on c.m_id=m.m_id where m.m_id=#{m_id}
+	</select>
+	
+	<select id="isExistCartItem" parameterType="com.itwill.yoridogam.pay.cart.Cart" resultType="Integer">
+		select count(*) from cart c join member m on c.m_id=m.m_id where p_no=#{product.p_no} and m.m_id=#{member.m_id}
+	</select>
+
+
+	<select id="selectCartItem" parameterType="Integer" resultMap="cartResultMap">
+		select * from cart c join product p on p.p_no=c.p_no join member m on m.m_id=c.m_id where ci_no=#{ci_no}
+	</select>
+	<select id="selectCartItemPNo" parameterType="Integer" resultMap="cartResultMap">
+		select * from cart c join product p on p.p_no=c.p_no join member m on m.m_id=c.m_id where p.p_no=#{p_no}
+	</select>
+	
+
+
+
+
+</mapper>

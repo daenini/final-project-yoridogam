@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.MemberMapper">
+	
+	<!-- exitedMember -->
+	<select id="existedMember" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) cnt from member where m_id=#{m_id}
+	</select>
+	
+	<!-- findMember -->
+	<select id="findMember" parameterType="java.lang.String" resultType="com.itwill.yoridogam.member.Member">
+		select * from member where m_id=#{m_id}
+	</select>
+	
+	<!-- createMember -->
+	<insert id="create" parameterType="com.itwill.yoridogam.member.Member">
+		insert into member(m_id,m_name,m_pass,m_addr,m_email,m_phone,m_gender) 
+		values(#{m_id},#{m_name},#{m_pass},#{m_addr},#{m_email},#{m_phone},#{m_gender})
+	</insert>
+
+	<!-- MemberDetail -->
+	<update id="update" parameterType="com.itwill.yoridogam.member.Member">
+		update member 
+		 set m_name=#{m_name}, m_pass=#{m_pass}, m_addr=#{m_addr},
+		 m_email=#{m_email},m_phone=#{m_phone},m_gender=#{m_gender} 
+		 where m_id=#{m_id}
+	</update>
+	
+	<!-- removeMember -->
+	<delete id="remove" parameterType="java.lang.String">
+		delete member where m_id=#{m_id}
+	</delete>
+
+</mapper>

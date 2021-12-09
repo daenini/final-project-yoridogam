@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.TeacherMapper">
+	
+	
+	<!-- exitedTeacher -->
+	<select id="existedTeacher" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) cnt from teacher where t_id=#{t_id}
+	</select>
+	
+	<!-- findTeacher -->
+	<select id="findTeacher" parameterType="java.lang.String" resultType="com.itwill.yoridogam.teacher.Teacher">
+		select * from teacher where t_id=#{t_id}
+	</select>
+	<!-- findTeacherList -->
+	<select id="findTeacherList" parameterType="java.lang.String" resultType="com.itwill.yoridogam.teacher.Teacher">
+		select * from teacher
+	</select>
+	<!-- createTeacher -->
+	<insert id="create" parameterType="com.itwill.yoridogam.teacher.Teacher">
+		insert into teacher(t_id,t_name,t_pass,t_phone,t_email,t_photo,t_detail,t_location) 
+		values(#{t_id},#{t_name},#{t_pass},#{t_phone},#{t_email},#{t_photo},#{t_detail},#{t_location})
+	</insert>
+	
+	<!-- teacherDetail -->
+	<update id="update" parameterType="com.itwill.yoridogam.teacher.Teacher">
+		update teacher 
+		 set t_name=#{t_name}, t_pass=#{t_pass},t_phone=#{t_phone}, t_email=#{t_email},
+		 t_photo=#{t_photo},t_detail=#{t_detail}, t_location=#{t_location} 
+		 where t_id=#{t_id}
+	</update>
+	
+	<!-- removeTeacher -->
+	<delete id="remove" parameterType="java.lang.String">
+		delete teacher where t_id=#{t_id}
+	</delete>
+	
+ 
+	
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.ReviewMapper">
+	<resultMap id="reviewResultMap" type="com.itwill.yoridogam.review.Review" >
+		<result column="R_NO" property="r_no"/>
+		<result column="R_TITLE" property="r_title"/>
+		<result column="R_CONTENT" property="r_content"/>
+		<result column="R_GRADE" property="r_grade"/>
+		<result column="R_PHOTO" property="r_photo"/>
+		<result column="R_DATE" property="r_date"/>
+		<association property="member" javaType="com.itwill.yoridogam.member.Member" autoMapping="true">
+			<result column="M_ID" property="m_id"/>
+			<result column="M_NAME" property="m_name"/>
+		</association>
+		<association property="product" javaType="com.itwill.yoridogam.product.Product" autoMapping="true">
+			<result column="P_NO" property="p_no"/>
+			<result column="P_NAME" property="p_name"/>
+			<result column="P_PHOTO" property="p_photo"/>
+			<result column="P_DETAIL" property="p_detail"/>
+			<result column="P_TYPE" property="p_type"/>
+		</association>
+	</resultMap>	
+	
+	<insert id="insertReview" parameterType="com.itwill.yoridogam.review.Review">
+		insert into review values(REVIEW_R_NO_SEQ.nextval,#{r_title},#{r_content},#{r_grade},#{r_photo},sysdate,#{member.m_id},#{product.p_no})
+	</insert>
+	
+	<update id="modifyReview" parameterType="com.itwill.yoridogam.review.Review">
+		update review set r_title=#{r_title}, r_content=#{r_content}, r_grade=#{r_grade} where r_no=#{r_no}
+	</update>
+	
+	<delete id="deleteReview" parameterType="Integer">
+		delete from review where r_no=#{r_no}
+	</delete>
+	
+	<select id="reviewOne" parameterType="Integer" resultMap="reviewResultMap">
+		select * from review where r_no=#{r_no}
+	</select>
+	
+	<select id="reviewAllId" parameterType="String" resultMap="reviewResultMap">
+		select * from review where m_id=#{member.m_id}
+	</select>
+
+	<select id="reviewAllPno" parameterType="Integer" resultMap="reviewResultMap">
+		select * from review where p_no=#{p_no}
+	</select>
+	
+</mapper>

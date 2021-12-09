@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.ReservationMapper">
+
+<resultMap type="com.itwill.yoridogam.reservation.Reservation" id="ReservationResultMap">
+	<result column="RSV_NO" property="rsv_no"/>
+	<result column="RSV_TOTAL" property="rsv_total"/>
+	<result column="RSV_TYPE" property="rsv_type"/>
+	<result column="RSV_QTY" property="rsv_qty"/>
+	<result column="RSV_DATE" property="rsv_date"/>
+	<result column="RSV_TIME" property="rsv_time"/>
+	<result column="RSV_PAYDATE" property="rsv_payDate"/>
+	<association property="member" javaType="com.itwill.yoridogam.member.Member" autoMapping="true">
+		<result column="M_ID" property="m_id"/>
+	</association>
+	<association property="product" javaType="com.itwill.yoridogam.product.Product" autoMapping="true">
+		<result column="P_NO" property="p_no"/>
+	</association>
+</resultMap>
+
+<resultMap type="com.itwill.yoridogam.product.Product" id="productResultMap">
+	<result column="P_NO" property="p_no"/>
+	<result column="P-NAME" property="p_name"/>
+	<result column="P_CATEGORY" property="p_category"/>
+</resultMap>
+
+ 
+ <!-- 오프라인 강의예약 insert -->
+<insert id="create" parameterType="com.itwill.yoridogam.reservation.Reservation">
+ insert into reservation(rsv_no, rsv_total, rsv_type, rsv_qty, rsv_date, rsv_time, rsv_payDate, m_id, p_no)
+values(RESERVATION_RSV_NO_SEQ.nextval,#{rsv_total},#{rsv_type},#{rsv_qty},#{rsv_date},#{rsv_time},sysdate,#{member.m_id},#{product.p_no})
+<!-- insert한 값 번호 가져오기 -->
+<selectKey keyProperty="rsv_no" resultType="java.lang.Integer" order="AFTER"> 
+	SELECT RESERVATION_RSV_NO_SEQ.CURRVAL FROM DUAL 
+</selectKey>
+</insert>
+
+<!--m_id 회원 예약 전체 조회-->
+<select id="selectAll" parameterType="java.lang.String" resultMap="ReservationResultMap" >
+ select * from reservation join product on m_id=#{member.m_id} order by rsv_no desc
+</select>
+
+<!-- p_no 상품 예약 내역 조회 -->
+<select id="selectAllbyP" parameterType="java.lang.Integer" resultMap="ReservationResultMap">
+ select * from reservation rsv join member m  on rsv.m_id=m.m_id where p_no=#{product.p_no}  order by rsv_no desc
+</select>
+
+<!-- selectRsv_no -->
+<select id="selectRsv_no" parameterType="java.lang.Integer" resultMap="ReservationResultMap" >
+ select * from reservation where rsv_no=#{rsv_no}
+</select>
+
+<!--m_id 회원이 오프라인 예약한 상품 상세 조회-->
+<select id="selectById" parameterType="java.lang.String" resultMap="productResultMap" >
+select * from product p join reservation rsv on rsv.p_no=p.p_no where rsv.m_id=#{member.m_id}
+</select>
+
+<!-- 예약할 상품이 이미 회원의 예약DB에 있는지 유무 확인 -->
+<select id="selectByP_no" parameterType="com.itwill.yoridogam.reservation.Reservation" resultMap="ReservationResultMap">
+select * from reservation where m_id=#{member.m_id} and p_no=#{product.p_no} 
+</select>
+
+<!-- m_id회원 특정 예약 삭제 -->
+<delete id="deleteById" parameterType="java.lang.Integer">
+delete from reservation where rsv_no=#{rsv_no}
+</delete>
+
+<!-- m_id회원 전체 예약 삭제 -->
+<delete id="deleteAll" parameterType="java.lang.String">
+delete from reservation where m_id=#{m_id}
+</delete>
+
+
+</mapper>

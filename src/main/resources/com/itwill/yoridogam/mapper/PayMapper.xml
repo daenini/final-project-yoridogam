@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.PayMapper">
+	<resultMap id="payResultMap" type="com.itwill.yoridogam.pay.pay.Pay">
+		<result column="PAY_NO" property="pay_no"/>
+		<result column="PAY_DATE" property="pay_date"/>
+		<result column="PAY_TOTAL" property="pay_total"/>
+		<result column="PAY_TYPE" property="pay_type"/>
+		<association property="member" javaType="com.itwill.yoridogam.member.Member" autoMapping="true">
+			<result column="M_ID" property="m_id"/>
+			<result column="M_NAME" property="m_name"/>
+			<result column="M_PASS" property="m_pass"/>
+			<result column="M_ADDR" property="m_addr"/>
+			<result column="M_EMAIL" property="m_email"/>
+			<result column="M_GENDER" property="m_gender"/>
+		</association>
+		<collection property="payItemList" javaType="list" ofType="com.itwill.yoridogam.pay.payItem.Pay_item" autoMapping="true">
+			<result column="PI_NO" property="pi_no"/>
+			<result column="PI_QTY" property="pi_qty"/>
+			<result column="PAY_NO" property="pay_no"/>
+			<association property="product" javaType="com.itwill.yoridogam.product.Product" autoMapping="true">
+				<result column="P_NO" property="p_no"/>
+				<result column="P_NAME" property="p_name"/>
+				<result column="P_DETAIL" property="p_detail"/>
+				<result column="P_CATEGORY" property="p_category"/>
+				<result column="P_PRICE" property="p_price"/>
+				<result column="P_TYPE" property="p_type"/>
+				<result column="P_PHOTO" property="p_photo"/>
+				<association property="teacher" javaType="com.itwill.yoridogam.teacher.Teacher" autoMapping="true">
+					<result column="T_ID" property="t_id"/>
+					<result column="T_NAME" property="t_name"/>
+				</association>
+			</association>
+		</collection>
+	</resultMap>
+	<insert id="createPay" parameterType="com.itwill.yoridogam.pay.pay.Pay" >
+		insert into pay(pay_no, pay_date, pay_total, pay_type, m_id) values(PAY_PAY_NO_SEQ.nextval,sysdate,#{pay_total},#{pay_type},#{member.m_id})
+	<selectKey keyProperty="pay_no" resultType="Integer" order="AFTER">
+		SELECT PAY_PAY_NO_SEQ.CURRVAL FROM DUAL
+	</selectKey>
+	</insert>
+	
+	
+	<delete id="deletePayByNo" parameterType="Integer">
+		delete from pay where pay_no=#{pay_no}
+	</delete>
+
+	<delete id="deletePay" parameterType="String">
+		delete from pay where m_id=#{m_id}
+	</delete>
+
+	<select id="isExistPay" parameterType="String" resultType="Integer">
+		select count(*) from pay where m_id=#{m_id}
+	</select>
+
+	<select id="findPayByNo" parameterType="Integer" resultMap="payResultMap" >
+		select * from pay where pay_no=#{pay_no}
+	</select>
+
+	<select id="findPayList" parameterType="String"  resultMap="payResultMap">
+		select * from pay where m_id=#{m_id}
+	</select>
+	
+	<select id="findPayDetailList" parameterType="String" resultMap="payResultMap">
+		select * from pay py join pay_item pi on py.pay_no=pi.pay_no join product p on pi.p_no=p.p_no where py.m_id=#{m_id}
+	</select>
+	
+	<select id="findPayDetailByNo" parameterType="Integer" resultMap="payResultMap">
+		select * from pay py join pay_item pi on py.pay_no=pi.pay_no join product p on pi.p_no=p.p_no join member m on py.m_id = m.m_id join teacher t on t.t_id=p.t_id where py.pay_no=#{pay_no}
+	</select>
+	
+</mapper>

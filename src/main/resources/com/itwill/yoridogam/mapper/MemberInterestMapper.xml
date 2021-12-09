@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.yoridogam.mapper.MemberInterestMapper">
+	<resultMap type="com.itwill.yoridogam.memberInterest.MemberInterest" id="memberInterestResultMap" autoMapping="true">
+		<result column="MI_NO" property="mi_no"/>
+		<association property="member" javaType="com.itwill.yoridogam.member.Member" >
+			<result column="M_ID" property="m_id"/>
+		</association>
+	</resultMap>
+	<!-- removeMemberInterest_By_id -->
+		<delete id="remove" parameterType="java.lang.String">
+			delete member_interest where m_id=#{member.m_id}
+		</delete>
+	<!-- createMemberInterest -->
+		<insert id="create" parameterType="com.itwill.yoridogam.memberInterest.MemberInterest">
+			insert into member_interest(mi_no,mi_interest,m_id)
+			values(MEMBER_INTEREST_MI_NO_SEQ.nextval,#{mi_interest},#{member.m_id})
+		</insert>
+	<!-- findMemberInterest_By_Id -->
+		<select id="getMemberInterestList" parameterType="java.lang.String" resultMap="memberInterestResultMap">
+			select * from member_interest where m_id=#{member.m_id}
+		</select>	
+	<!-- MemberInterstUpdate_By_id -->
+		<update id="update" parameterType="com.itwill.yoridogam.memberInterest.MemberInterest">
+			update member_interest set mi_interest =#{mi_interest} where m_id =#{member.m_id}
+		</update>
+		
+</mapper>
